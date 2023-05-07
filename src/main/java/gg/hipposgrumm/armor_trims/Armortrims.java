@@ -58,12 +58,11 @@ public class Armortrims {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final DeferredRegister<Item> SMITHING_TEMPLATES = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    public static final DeferredRegister<Item> SMITHING_TEMPLATES_SPECIAL_NETHERITEUPGRADE = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     public static final DeferredRegister<MenuType<?>> NEW_SMITHING_MENUS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
     public static final DeferredRegister<RecipeSerializer<?>> TRIMMING_RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
     public static final DeferredRegister<GlobalLootModifierSerializer<?>> TEMPLATES_LOOT_SPAWNER = DeferredRegister.create(ForgeRegistries.Keys.LOOT_MODIFIER_SERIALIZERS, MODID);
 
-    public static final RegistryObject<Item> NETHERITE_UPGRADE = SMITHING_TEMPLATES_SPECIAL_NETHERITEUPGRADE.register("netherite_upgrade_smithing_template", () -> new SmithingTemplate(Trims.NETHERITE_UPGRADE, new Item.Properties()));
+    public static final RegistryObject<Item> NETHERITE_UPGRADE = SMITHING_TEMPLATES.register("netherite_upgrade_smithing_template", () -> new SmithingTemplate(Trims.NETHERITE_UPGRADE, new Item.Properties()));
     public static final RegistryObject<Item> COAST_ARMOR_TRIM = SMITHING_TEMPLATES.register("coast_armor_trim_smithing_template", () -> new SmithingTemplate(Trims.COAST, new Item.Properties()));
     public static final RegistryObject<Item> DUNE_ARMOR_TRIM = SMITHING_TEMPLATES.register("dune_armor_trim_smithing_template", () -> new SmithingTemplate(Trims.DUNE, new Item.Properties()));
     public static final RegistryObject<Item> EYE_ARMOR_TRIM = SMITHING_TEMPLATES.register("eye_armor_trim_smithing_template", () -> new SmithingTemplate(Trims.EYE, new Item.Properties()));
@@ -106,11 +105,6 @@ public class Armortrims {
         TEMPLATES_LOOT_SPAWNER.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
-
-        IEventBus modEventBus2 = FMLJavaModLoadingContext.get().getModEventBus();
-        if (!Config.disableNetheriteUpgrade()) {
-            SMITHING_TEMPLATES_SPECIAL_NETHERITEUPGRADE.register(modEventBus2);
-        }
 
         MinecraftForge.EVENT_BUS.register(this);
     }

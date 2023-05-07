@@ -141,7 +141,7 @@ public class SmithingMenuNew extends AbstractContainerMenu {
         ItemStack upgradeItem = this.inputSlots.getItem(ADDITIONAL_SLOT);
         ItemStack materialItem = this.inputSlots.getItem(MATERIAL_SLOT);
         if (upgradeItem.getItem() instanceof SmithingTemplate templateItem) {
-            if (templateItem.getTrim() == Trims.NETHERITE_UPGRADE && materialItem.is(ItemTags.create(new ResourceLocation("forge:ingots/netherite")))) {
+            if (templateItem.getTrim() == Trims.NETHERITE_UPGRADE && materialItem.is(ItemTags.create(new ResourceLocation("forge:ingots/netherite"))) && !Config.disableNetheriteUpgrade()) {
                 Container vanillaRecipeContainer = new SimpleContainer(2);
                 vanillaRecipeContainer.setItem(0, baseItem);
                 vanillaRecipeContainer.setItem(1, materialItem);
