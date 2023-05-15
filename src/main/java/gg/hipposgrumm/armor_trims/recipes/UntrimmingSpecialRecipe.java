@@ -84,6 +84,7 @@ public class UntrimmingSpecialRecipe extends CustomRecipe {
                 nonnulllist.set(i, itemstack.getContainerItem());
             } else if (itemstack.is(Tags.Items.SHEARS)) {
                 if (itemstack.isDamageableItem()) itemstack.setDamageValue(itemstack.getDamageValue()-1);
+                nonnulllist.set(i, itemstack);
                 break;
             }
         }
