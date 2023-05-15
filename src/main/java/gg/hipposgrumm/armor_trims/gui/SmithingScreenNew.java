@@ -19,6 +19,7 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -103,6 +104,10 @@ public class SmithingScreenNew extends AbstractContainerScreen<SmithingMenuNew> 
         }
         if (this.menu.getSlot(1).hasItem() && this.menu.getSlot(1).getItem().getItem() instanceof SmithingTemplate) {
             this.blit(p_98917_, i + 7, j + 65, 0, this.imageHeight, 18, 18);
+        }
+        if (this.menu.getSlot(0).getItem().getItem() instanceof ArmorItem) {
+            RenderSystem.setShaderTexture(0, new ResourceLocation(Armortrims.MODID, "textures/item/empty_slot_smithing_template_armor_trim.png"));
+            this.blit(p_98917_, i + 52, j + 48, 0, 0, 16, 16);
         }
         renderEntityInInventory(i + 145, j + 75, 30, 50, -50, preview);
     }

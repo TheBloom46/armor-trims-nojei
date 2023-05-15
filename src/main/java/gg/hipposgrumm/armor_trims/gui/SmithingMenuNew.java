@@ -57,6 +57,7 @@ public class SmithingMenuNew extends AbstractContainerMenu {
     @Nullable
     private UpgradeRecipe selectedRecipe;
     private final List<UpgradeRecipe> recipes;
+    private ItemStack templateInput;
 
     public SmithingMenuNew(int p_40248_, Inventory p_40249_, ContainerLevelAccess access, @Nullable Player player) {
         super(Armortrims.SMITHING_MENU_NEW.get(), p_40248_);
@@ -111,13 +112,14 @@ public class SmithingMenuNew extends AbstractContainerMenu {
         this.resultSlots.awardUsedRecipes(p_150663_);
         this.shrinkStackInSlot(INPUT_SLOT);
         this.shrinkStackInSlot(MATERIAL_SLOT);
+        templateInput = this.inputSlots.getItem(ADDITIONAL_SLOT).copy();
         if (!(Config.dontConsumeSmithingTemplates() && this.slots.get(ADDITIONAL_SLOT).getItem().getItem() instanceof SmithingTemplate)) {
             this.shrinkStackInSlot(ADDITIONAL_SLOT);
         }
         this.access.execute((p_40263_, p_40264_) -> {
             p_40263_.levelEvent(1044, p_40264_, 0);
         });
-        if (LargeItemLists.getTrimSmithingTemplates().contains(this.inputSlots.getItem(ADDITIONAL_SLOT).getItem()) && p_150663_ instanceof ServerPlayer sPlayer) {
+        if (LargeItemLists.getTrimSmithingTemplates().contains(templateInput.getItem()) && p_150663_ instanceof ServerPlayer sPlayer) {
             Advancement advancement = sPlayer.getLevel().getServer().getAdvancements().getAdvancement(new ResourceLocation("armor_trims:trim_with_any_armor_pattern"));
             Advancement advancementChallenge = sPlayer.getLevel().getServer().getAdvancements().getAdvancement(new ResourceLocation("armor_trims:trim_with_all_armor_patterns"));
             if (advancement != null && !sPlayer.getAdvancements().getOrStartProgress(advancement).isDone()) {
