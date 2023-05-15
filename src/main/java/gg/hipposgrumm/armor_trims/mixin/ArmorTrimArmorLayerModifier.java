@@ -49,7 +49,6 @@ public abstract class ArmorTrimArmorLayerModifier<T extends LivingEntity, M exte
 
     @Inject(method = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;)V", at = @At("TAIL"))
     private void armortrims_humanoidRenderLayerModifier(PoseStack p_117119_, MultiBufferSource p_117120_, T p_117121_, EquipmentSlot p_117122_, int p_117123_, A p_117124_, CallbackInfo ci) {
-        if (true) throw new RuntimeException();
         ItemStack itemstack_m = p_117121_.getItemBySlot(p_117122_);
         if (itemstack_m.getItem() instanceof ArmorItem && TrimmableItem.isTrimmed(itemstack_m)) {
             isCustomModel = this.getArmorModelHook(p_117121_, itemstack_m, p_117122_, p_117124_) != p_117124_;
