@@ -30,5 +30,6 @@
   "tooltip.armor_trims.trim": "Trim: ",
   "jei.armor_trimming": "Armor Trimming",
   "jei.item_upgrading": "Item Upgrading",
-  "jei.armor_untrimming": "Armor Un-Trimming"
+  "jei.armor_untrimming": "Armor Un-Trimming",
+  "jei.armor_untrimming_notice": "Armor can be un-trimmed with shears."
 }

@@ -1,20 +1,26 @@
 package gg.hipposgrumm.armor_trims.compat.jei;
 
 import gg.hipposgrumm.armor_trims.Armortrims;
+import gg.hipposgrumm.armor_trims.api.ArmortrimsApi;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate;
 import gg.hipposgrumm.armor_trims.trimming.TrimmableItem;
+import gg.hipposgrumm.armor_trims.util.AssociateTagsWithItems;
 import gg.hipposgrumm.armor_trims.util.LargeItemLists;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.*;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.Tags;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -28,7 +34,7 @@ public class JEI_Armortrims implements IModPlugin {
         return new ResourceLocation(Armortrims.MODID, "armortrims_jei");
     }
 
-    @Override
+    /*@Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         for (Item armorItem : LargeItemLists.getAllArmors()) {
             registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, armorItem, (itemstack, context) -> {
@@ -41,7 +47,7 @@ public class JEI_Armortrims implements IModPlugin {
                 return trimNames.toString();
             });
         }
-    }
+    }*/
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
@@ -49,15 +55,16 @@ public class JEI_Armortrims implements IModPlugin {
         registration.addRecipeCategories(new ItemUpgradeRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
-    @Override
+    /*@Override
     public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
-        //registration.getCraftingCategory().addCategoryExtension(UntrimmingSpecialRecipe.class, SpecialUntrimmingHelper::new);
-    }
+        registration.getCraftingCategory().addCategoryExtension(UntrimmingSpecialRecipe.class, SpecialUntrimmingHelper::new);
+    }*/
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         registration.addRecipes(trimmingRecipeType, ArmortrimRecipeMaker.getTrimmingRecipes(new ArmortrimRecipeMaker.ArmortrimsRecipeFactory(), registration.getIngredientManager()));
         registration.addRecipes(upgradeRecipeType, ItemUpgradeRecipeMaker.getUpgradingRecipes(new ItemUpgradeRecipeMaker.ItemUpgradeRecipeFactory(), registration.getIngredientManager()));
+        registration.addIngredientInfo(Arrays.stream(new AssociateTagsWithItems("#forge:shears").getItems()).map(f -> f.getDefaultInstance()).toList(), VanillaTypes.ITEM_STACK, new TranslatableComponent("jei.armor_untrimming_notice"));
     }
 
     @Override
