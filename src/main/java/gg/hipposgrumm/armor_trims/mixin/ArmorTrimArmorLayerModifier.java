@@ -3,6 +3,7 @@ package gg.hipposgrumm.armor_trims.mixin;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.logging.LogUtils;
 import gg.hipposgrumm.armor_trims.Armortrims;
 import gg.hipposgrumm.armor_trims.config.Config;
 import gg.hipposgrumm.armor_trims.trimming.TrimmableItem;
@@ -32,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Mixin(HumanoidArmorLayer.class)
 public abstract class ArmorTrimArmorLayerModifier<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> extends RenderLayer<T, M> {
@@ -45,10 +47,9 @@ public abstract class ArmorTrimArmorLayerModifier<T extends LivingEntity, M exte
 
     @Shadow protected abstract void setPartVisibility(A p_117126_, EquipmentSlot p_117127_);
 
-    @Shadow protected abstract Model getArmorModelHook(T entity, ItemStack itemStack, EquipmentSlot slot, A model);
-
     @Inject(method = "Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;)V", at = @At("TAIL"))
     private void armortrims_humanoidRenderLayerModifier(PoseStack p_117119_, MultiBufferSource p_117120_, T p_117121_, EquipmentSlot p_117122_, int p_117123_, A p_117124_, CallbackInfo ci) {
+        if (true) throw new RuntimeException();
         ItemStack itemstack_m = p_117121_.getItemBySlot(p_117122_);
         if (itemstack_m.getItem() instanceof ArmorItem && TrimmableItem.isTrimmed(itemstack_m)) {
             isCustomModel = this.getArmorModelHook(p_117121_, itemstack_m, p_117122_, p_117124_) != p_117124_;
@@ -137,9 +138,8 @@ public abstract class ArmorTrimArmorLayerModifier<T extends LivingEntity, M exte
     }
 
     public ResourceLocation getTrimResource(net.minecraft.world.entity.Entity entity, ItemStack stack, EquipmentSlot slot) {
-        String trim = Trims.getValueOf(TrimmableItem.getTrim(stack)).getId();
-        String namespace = Armortrims.MODID;
-        String location = String.format(java.util.Locale.ROOT, "%s:textures/trims/models/armor/%s%s.png", namespace, trim, (usesInnerModel_armortrimsMixin(slot) ? "_leggings" : ""));
+        Trims trim = new Trims(TrimmableItem.getTrim(stack));
+        String location = trim.getLocation(slot.equals(EquipmentSlot.LEGS)).toString();
 
         location = net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, location, slot, "overlay");
         ResourceLocation resourcelocation = TRIM_LOCATION_CACHE.get(location);
@@ -150,5 +150,12 @@ public abstract class ArmorTrimArmorLayerModifier<T extends LivingEntity, M exte
         }
 
         return resourcelocation;
+    }
+
+    /**
+     * Hook to allow item-sensitive armor model. for HumanoidArmorLayer.
+     */
+    protected net.minecraft.client.model.Model getArmorModelHook(T entity, ItemStack itemStack, EquipmentSlot slot, A model) {
+        return net.minecraftforge.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
     }
 }
