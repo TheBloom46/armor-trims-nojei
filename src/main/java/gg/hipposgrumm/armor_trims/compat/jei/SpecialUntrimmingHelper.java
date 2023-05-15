@@ -2,6 +2,7 @@ package gg.hipposgrumm.armor_trims.compat.jei;
 
 import com.mojang.logging.LogUtils;
 import gg.hipposgrumm.armor_trims.Armortrims;
+import gg.hipposgrumm.armor_trims.api.ArmortrimsApi;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate;
 import gg.hipposgrumm.armor_trims.recipes.UntrimmingSpecialRecipe;
 import gg.hipposgrumm.armor_trims.trimming.TrimmableItem;
@@ -41,11 +42,11 @@ public class SpecialUntrimmingHelper implements ICraftingCategoryExtension {
         if (Collections.disjoint(focus, List.of(new AssociateTagsWithItems(Tags.Items.SHEARS.location().toString()).getItems()))) {
             for (Item armorItem : LargeItemLists.getAllArmors()) {
                 for (Item templateItem : new ArrayList<>(Arrays.asList( // Limited list of templates so that Minecraft doesn't (completely) freeze when looking up uses for Shears.
-                        Armortrims.COAST_ARMOR_TRIM.get(),
-                        Armortrims.EYE_ARMOR_TRIM.get(),
-                        Armortrims.RIB_ARMOR_TRIM.get(),
-                        Armortrims.VEX_ARMOR_TRIM.get(),
-                        Armortrims.WARD_ARMOR_TRIM.get()
+                        ArmortrimsApi.getItem(new ResourceLocation(Armortrims.MODID, "coast_armor_trim_smithing_template")),
+                        ArmortrimsApi.getItem(new ResourceLocation(Armortrims.MODID, "eye_armor_trim_smithing_template")),
+                        ArmortrimsApi.getItem(new ResourceLocation(Armortrims.MODID, "rib_armor_trim_smithing_template")),
+                        ArmortrimsApi.getItem(new ResourceLocation(Armortrims.MODID, "vex_armor_trim_smithing_template")),
+                        ArmortrimsApi.getItem(new ResourceLocation(Armortrims.MODID, "ward_armor_trim_smithing_template"))
                 ))) {
                     for (Item materialItem : new ArrayList<>(Arrays.asList( // Limited list of templates so that Minecraft doesn't (completely) freeze when looking up uses for Shears.
                             Items.EMERALD,

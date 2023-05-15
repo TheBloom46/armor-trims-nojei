@@ -1,44 +1,36 @@
 package gg.hipposgrumm.armor_trims.trimming;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public enum Trims {
-    COAST,
-    DUNE,
-    EYE,
-    HOST,
-    RAISER,
-    RIB,
-    SENTRY,
-    SHAPER,
-    SILENCE,
-    SNOUT,
-    SPIRE,
-    TIDE,
-    VEX,
-    WARD,
-    WAYFINDER,
-    WILD,
-    NETHERITE_UPGRADE;
+public class Trims {
+    public final ResourceLocation name;
 
-    private static List<String> nonexistantIllegals = new ArrayList<String>();
+    private static Map<ResourceLocation, Pair<ResourceLocation, ResourceLocation>> trims = new HashMap<>();
 
-    public String getId() {
-        return this.name().toLowerCase();
+    public Trims(ResourceLocation name) {
+        this.name = name;
     }
 
-    public static Trims getValueOf(String name) {
-        if (!nonexistantIllegals.contains(name)) {
-            try {
-                return valueOf(name.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                LogUtils.getLogger().warn("There is no trim named: " + name.toUpperCase());
-                nonexistantIllegals.add(name);
-            }
+    public static void createTrim(ResourceLocation name, ResourceLocation location, ResourceLocation pantsLocation) {
+        if (trims.containsKey(name)) {
+            LogUtils.getLogger().warn("Trim: "+name+" is already registered.");
+        } else {
+            trims.put(name, new Pair<>(location, pantsLocation));
         }
-        return COAST;
+    }
+
+    public ResourceLocation getId() {
+        return name;
+    }
+
+    public ResourceLocation getLocation(boolean pants) {
+        return trims.containsKey(name) ? (pants ? trims.get(name).getSecond():trims.get(name).getFirst()) : new ResourceLocation("minecraft:missingno");
     }
 }

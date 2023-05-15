@@ -2,24 +2,22 @@ package gg.hipposgrumm.armor_trims.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.logging.LogUtils;
 import gg.hipposgrumm.armor_trims.model.TrimDecorationBaker;
+import gg.hipposgrumm.armor_trims.model.TrimRenderLayer;
 import gg.hipposgrumm.armor_trims.trimming.TrimmableItem;
 import gg.hipposgrumm.armor_trims.trimming.Trims;
-import gg.hipposgrumm.armor_trims.util.GetAvgColor;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -28,8 +26,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.StainedGlassPaneBlock;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -67,7 +63,7 @@ public abstract class TrimmedItemDecorator {
             }
 
             ItemStack overlayStack = new ItemStack(Items.AIR);
-            overlayStack = TrimmableItem.applyTrim(overlayStack, Trims.getValueOf(TrimmableItem.getTrim(p_115144_).toUpperCase()), new ItemStack(ForgeRegistries.ITEMS.getValue(TrimmableItem.getMaterial(p_115144_))), true);
+            overlayStack = TrimmableItem.applyTrim(overlayStack, new Trims(TrimmableItem.getTrim(p_115144_)), new ItemStack(ForgeRegistries.ITEMS.getValue(TrimmableItem.getMaterial(p_115144_))), true);
             this.renderModelLists(layer, overlayStack, p_115149_, p_115150_, p_115147_, ivertexbuilder);
         }
     }
@@ -77,7 +73,7 @@ public abstract class TrimmedItemDecorator {
         if (TrimmableItem.isTrimmed(p_92677_) && p_92677_.is(Items.AIR)) {
             return TrimmableItem.getMaterialColor(p_92677_);
         }
-        return this.itemColors.getColor(p_92677_,p_92678_);
+        return p_92678_!=-1?this.itemColors.getColor(p_92677_,p_92678_):p_92678_;
     }
 
     @Redirect(method = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderQuadList(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Ljava/util/List;Lnet/minecraft/world/item/ItemStack;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))

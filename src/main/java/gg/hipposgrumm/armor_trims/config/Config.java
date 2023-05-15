@@ -6,11 +6,12 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public final class Config {
-    private static final List<String> trimmableMaterialsList = Arrays.asList("#forge:ingots/gold","#forge:ingots/iron","#forge:ingots/copper","#forge:ingots/netherite","#forge:gems/emerald","#forge:gems/amethyst","#forge:dusts/redstone","#forge:gems/lapis","#forge:gems/quartz","#forge:gems/diamond","#forge:ingots/manasteel","#forge:ingots/elementium","#forge:ingots/terrasteel","#forge:gems/mana_diamond","#forge:gems/dragonstone", "#forge:ingots/zinc","create:polished_rose_quartz");
+    private static final List<String> trimmableMaterialsList = new ArrayList<>();
     public static class As_Client {
         final ForgeConfigSpec.BooleanValue enableNewSmithingGUI;
         final ForgeConfigSpec.BooleanValue dontConsumeSmithingTemplate;
@@ -40,7 +41,7 @@ public final class Config {
                     .define("Don't Consume Smithing Templates", false);
             disableVanillaNetheriteUpgrade = builder
                     .comment(" Disable vanilla netherite upgrading in favor of the new one. NOT recommended to enable this alongside disableNetheriteUpgrade.")
-                    .define("Disable Vanilla Netherite Upgrading", false);
+                    .define("Disable Vanilla Netherite Upgrading", true);
             disableNetheriteUpgrade = builder
                     .comment(" Disable netherite upgrading via smithing template. Great if you feel like it takes away from the old vanilla experience. NOT recommended to enable this alongside disableVanillaNetheriteUpgrade.")
                     .define("Disable Netherite Upgrade Smithing Template", false);
@@ -92,6 +93,10 @@ public final class Config {
                     .defineList("Armor Trim Materials", trimmableMaterialsList, entry -> true);
             builder.pop();
         }
+    }
+
+    public static void addCustomMaterial(String item) {
+        trimmableMaterialsList.add(item);
     }
 
     @OnlyIn(Dist.CLIENT)

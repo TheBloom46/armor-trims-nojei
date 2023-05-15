@@ -6,6 +6,7 @@ import gg.hipposgrumm.armor_trims.Armortrims;
 import gg.hipposgrumm.armor_trims.compat.jei.ArmortrimsRecipe;
 import gg.hipposgrumm.armor_trims.config.Config;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate;
+import gg.hipposgrumm.armor_trims.item.SmithingTemplate$Upgrade;
 import gg.hipposgrumm.armor_trims.trimming.Trims;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -26,6 +27,7 @@ import java.util.List;
 public class LargeItemLists {
     private static List<Item> allArmors = List.of();
     private static List<Item> smithingTemplates = List.of();
+    private static List<Item> smithingTemplatesUpgrades = List.of();
     private static List<Item> smithingTemplatesTrims = List.of();
 
     private static List<Item> getAllItems() {
@@ -45,18 +47,24 @@ public class LargeItemLists {
         smithingTemplates = getAllItemsOfType(SmithingTemplate.class);
     }
 
+    public static void setAllUpgradeTemplates() {
+        smithingTemplatesUpgrades = getAllItemsOfType(SmithingTemplate$Upgrade.class);
+    }
+
     public static void setAllTrimTemplates() {
-        Item[] templates = smithingTemplates.toArray(new Item[0]);
-        templates = ArrayUtils.removeAllOccurrences(templates, Armortrims.NETHERITE_UPGRADE.get());
-        smithingTemplatesTrims = List.of(templates);
+        smithingTemplatesTrims = smithingTemplates.stream().filter(f -> !smithingTemplatesUpgrades.contains(f)).toList();
     }
 
     public static List<Item> getAllArmors() {
         return allArmors;
     }
 
-    public static List<Item> getSmithingTemplates() {
+    public static List<Item> getAllSmithingTemplates() {
         return smithingTemplates;
+    }
+
+    public static List<Item> getUpgradeSmithingTemplates() {
+        return smithingTemplatesUpgrades;
     }
 
     public static List<Item> getTrimSmithingTemplates() {
@@ -75,15 +83,6 @@ public class LargeItemLists {
         }
         itemlist = ArrayUtils.removeAllOccurrences(itemlist, Items.AIR);
         return List.of(itemlist);
-    }
-
-    public static Item getTemplateFromTrim(Trims trim) {
-        for (Item template:getTrimSmithingTemplates()) {
-            if (((SmithingTemplate) template).getTrim() == trim) {
-                return template;
-            }
-        }
-        return Items.AIR;
     }
 
     public static List<Item> getAllItemsOfType(Class<? extends Item> itemType) {

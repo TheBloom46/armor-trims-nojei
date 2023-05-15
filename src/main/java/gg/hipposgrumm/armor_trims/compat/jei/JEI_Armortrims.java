@@ -62,7 +62,7 @@ public class JEI_Armortrims implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(Items.SMITHING_TABLE), trimmingRecipeType);
-        registration.addRecipeCatalyst(new ItemStack(Items.SMITHING_TABLE), upgradeRecipeType);
+        registration.addRecipeCatalyst(Items.SMITHING_TABLE.getDefaultInstance(), trimmingRecipeType);
+        registration.addRecipeCatalyst(Items.SMITHING_TABLE.getDefaultInstance(), upgradeRecipeType);
     }
 }

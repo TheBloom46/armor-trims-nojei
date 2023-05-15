@@ -21,14 +21,22 @@ import java.util.Objects;
 
 public class SmithingTemplate extends Item {
     private final Trims trim;
+    private final String translatableName;
 
     public Trims getTrim() {
         return this.trim;
     }
 
-    public SmithingTemplate(Trims trim, Item.Properties properties) {
+    protected SmithingTemplate(Item.Properties properties) {
         super(properties.tab(CreativeModeTab.TAB_MATERIALS).stacksTo(1));
-        this.trim = trim;
+        this.trim = null;
+        this.translatableName = "";
+    }
+
+    public SmithingTemplate(ResourceLocation trim, String translatableName, Item.Properties properties) {
+        super(properties.tab(CreativeModeTab.TAB_MATERIALS).stacksTo(1));
+        this.translatableName = translatableName;
+        this.trim = new Trims(trim);
     }
 
     @Override
@@ -48,86 +56,29 @@ public class SmithingTemplate extends Item {
 
     public void appendHoverText(ItemStack itemstack, Level world, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(itemstack, world, list, flag);
-        list.add(new TranslatableComponent("trims.armor_trims."+trim.getId()).withStyle(ChatFormatting.DARK_GRAY));
-        list.add(new TextComponent(""));
-        list.add(new TranslatableComponent("tooltip.armor_trims.applyTo").withStyle(ChatFormatting.GRAY));
-        if (trim.getId().equals("netherite_upgrade")) {
-            TranslatableComponent output = new TranslatableComponent("tooltip.armor_trims.applyTo.diamond_equipment");
-            output.withStyle(output.getStyle().withColor(getIngredientColor(Items.DIAMOND.getRegistryName())));
-            list.add(new TextComponent(" ").append(output));
-        } else {
+        if (trim != null) {
+            list.add(new TranslatableComponent("trims." + trim.name.toString().replace(":", ".")).withStyle(ChatFormatting.DARK_GRAY));
+            list.add(new TextComponent(""));
+            list.add(new TranslatableComponent("tooltip.armor_trims.applyTo").withStyle(ChatFormatting.GRAY));
             list.add(new TextComponent(" ").append(new TranslatableComponent("tooltip.armor_trims.applyTo.armor")).withStyle(ChatFormatting.BLUE));
-        }
-        list.add(new TranslatableComponent("tooltip.armor_trims.ingredients").withStyle(ChatFormatting.GRAY));
-        if (trim.getId().equals("netherite_upgrade")) {
-            List<String> itemsList = Arrays.stream(new AssociateTagsWithItems(Tags.Items.INGOTS_NETHERITE.location().toString()).getItems()).map(f -> f.getRegistryName().toString()).toList();
-            MutableComponent output = createColoredList(itemsList);
-            if (output==null) {
+            list.add(new TranslatableComponent("tooltip.armor_trims.ingredients").withStyle(ChatFormatting.GRAY));
+
+            List<String> configList = removeUnregisteredEntries(Config.compressItemNamesInTemplateTooltip() ? Config.trimmableMaterials() : removeUnregisteredAndDuplicateEntries(LargeItemLists.getAllMaterials()));
+            MutableComponent coloredList = createColoredList(configList);
+            if (coloredList == null) {
                 list.add(new TextComponent(" ").append(new TranslatableComponent("tooltip.armor_trims.ingredients.empty").withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC)));
             } else {
-                if (List.of(output.getContents().split(", ")).size() > 4) {
-                    if (Screen.hasShiftDown()) {
-                        list.add(new TextComponent(" ").append(output));
-                    } else {
-                        list.add(new TextComponent(" ").append(new TranslatableComponent("tooltip.armor_trims.ingredients.show_more").withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE)));
-                    }
-                } else {
-                    list.add(new TextComponent(" ").append(output));
-                }
-            }
-            list.add(new TextComponent(" ").append(output.withStyle(ChatFormatting.ITALIC)));
-        } else {
-            List<String> configList = removeUnregisteredEntries(Config.compressItemNamesInTemplateTooltip()?Config.trimmableMaterials():removeUnregisteredAndDuplicateEntries(LargeItemLists.getAllMaterials()));
-            MutableComponent coloredList = createColoredList(configList);
-            if (coloredList==null) {
-                    list.add(new TextComponent(" ").append(new TranslatableComponent("tooltip.armor_trims.ingredients.empty").withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC)));
-            } else {
-                if (configList.size() > 4) {
-                    if (Screen.hasShiftDown()) {
-                        list.add(new TextComponent(" ").append(coloredList));
-                    } else {
-                        list.add(new TextComponent(" ").append(new TranslatableComponent("tooltip.armor_trims.ingredients.show_more").withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE)));
-                    }
-                } else {
+                if (!(configList.size() > 4) || Screen.hasShiftDown()) {
                     list.add(new TextComponent(" ").append(coloredList));
-                }
-            }
-            /*
-            int configListSize = configList.size();
-            MutableComponent ingredientList = new TextComponent(" ");
-            if (configListSize > 4) {
-                if (Screen.hasShiftDown()) {
-                    for (int i = 0; i < configList.size() - 2; i++) {
-                        ingredientList = ingredientList.append(getIngredientNameFromListOf(i,configList)).append(new TextComponent(", "));
-                    }
-                    ingredientList = ingredientList.append(getIngredientNameFromListOf(configList.size() - 2,configList)).append(new TextComponent(", & "));
-                    ingredientList = ingredientList.append(getIngredientNameFromListOf(configList.size() - 1,configList));
-                    list.add(ingredientList);
                 } else {
                     list.add(new TextComponent(" ").append(new TranslatableComponent("tooltip.armor_trims.ingredients.show_more").withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE)));
                 }
-            } else if (configListSize == 2) {
-                ingredientList = ingredientList.append(getIngredientNameFromListOf(0,configList)).append(new TextComponent(" & "));
-                ingredientList = ingredientList.append(getIngredientNameFromListOf(1,configList));
-                list.add(ingredientList);
-            } else if (configListSize == 1) {
-                ingredientList = ingredientList.append(getIngredientNameFromListOf(0, configList));
-                list.add(ingredientList);
-            } else if (configListSize == 0) {
-                list.add(new TranslatableComponent("tooltip.armor_trims.ingredients.empty").withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
-            } else {
-                for (int i = 0; i < configList.size() - 2; i++) {
-                    ingredientList = ingredientList.append(getIngredientNameFromListOf(i,configList)).append(new TextComponent(", "));
-                }
-                ingredientList = ingredientList.append(getIngredientNameFromListOf(configList.size() - 2,configList)).append(new TextComponent(", & "));
-                ingredientList = ingredientList.append(getIngredientNameFromListOf(configList.size() - 1,configList));
-                list.add(ingredientList);
-            }*/
+            }
         }
     }
 
-    private List<? extends String> removeUnregisteredAndDuplicateEntries(List<Item> list) {
-        List<String> items = new ArrayList<String>();
+    protected List<? extends String> removeUnregisteredAndDuplicateEntries(List<Item> list) {
+        List<String> items = new ArrayList<>();
         for (Item item:list) {
             if (ForgeRegistries.ITEMS.containsKey(item.getRegistryName()) && !items.contains(item.getRegistryName().toString())) {
                 items.add(item.getRegistryName().toString());
@@ -137,9 +88,9 @@ public class SmithingTemplate extends Item {
     }
 
     @SuppressWarnings("unchecked")
-    private List<String> removeUnregisteredEntries(List<? extends String> entryList) {
+    protected List<String> removeUnregisteredEntries(List<? extends String> entryList) {
         List<String> list = (List<String>) entryList;
-        List<String> itemList = new ArrayList<String>();
+        List<String> itemList = new ArrayList<>();
         for (String item:list) {
             if (item.startsWith("#")) { // Remove empty tags.
                 Item[] items = new AssociateTagsWithItems(item.replace("#","")).getItems();
@@ -176,7 +127,7 @@ public class SmithingTemplate extends Item {
         }
     }
 
-    private static Component colorAndNameIngredient(int index, List<String> list) {
+    protected static Component colorAndNameIngredient(int index, List<String> list) {
         boolean isFromTag = list.get(index).startsWith("#");
         Item item;
         item = isFromTag ? new AssociateTagsWithItems(list.get(index)).getItems()[0] : ForgeRegistries.ITEMS.getValue(Objects.equals(ResourceLocation.tryParse(list.get(index)), null) ?new ResourceLocation("minecraft:air"):new ResourceLocation(list.get(index)));

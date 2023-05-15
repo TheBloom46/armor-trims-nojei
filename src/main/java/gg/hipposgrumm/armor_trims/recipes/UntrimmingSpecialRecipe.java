@@ -71,18 +71,7 @@ public class UntrimmingSpecialRecipe extends CustomRecipe {
             finalItem = new ItemStack(armorItem.getItem());
             TrimmableItem.clearTrim(finalItem);
         }
-        if (!Config.enableUntrimming()) {
-            return ItemStack.EMPTY;
-        } else {
-            Trims trim;
-            try {
-                trim = Trims.valueOf(TrimmableItem.getTrim(armorItem));
-            } catch (IllegalArgumentException e) {
-                trim = null;
-            }
-            Item material = ForgeRegistries.ITEMS.getValue(TrimmableItem.getMaterial(armorItem));
-            return finalItem;
-        }
+        return !Config.enableUntrimming()?ItemStack.EMPTY:finalItem;
     }
 
     @Override

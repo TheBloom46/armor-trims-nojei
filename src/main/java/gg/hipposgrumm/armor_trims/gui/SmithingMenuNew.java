@@ -9,6 +9,7 @@ import com.mojang.logging.LogUtils;
 import gg.hipposgrumm.armor_trims.Armortrims;
 import gg.hipposgrumm.armor_trims.config.Config;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate;
+import gg.hipposgrumm.armor_trims.item.SmithingTemplate$Upgrade;
 import gg.hipposgrumm.armor_trims.trimming.TrimmableItem;
 import gg.hipposgrumm.armor_trims.trimming.Trims;
 import gg.hipposgrumm.armor_trims.util.LargeItemLists;
@@ -28,6 +29,7 @@ import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.Tags;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 
@@ -106,7 +108,6 @@ public class SmithingMenuNew extends AbstractContainerMenu {
 
     protected void onTake(Player p_150663_, ItemStack p_150664_) {
         p_150664_.onCraftedBy(p_150663_.level, p_150663_, p_150664_.getCount());
-        boolean wasTrim = this.inputSlots.getItem(ADDITIONAL_SLOT).getItem() instanceof SmithingTemplate template && template.getTrim() != Trims.NETHERITE_UPGRADE;
         this.resultSlots.awardUsedRecipes(p_150663_);
         this.shrinkStackInSlot(INPUT_SLOT);
         this.shrinkStackInSlot(MATERIAL_SLOT);
@@ -116,15 +117,15 @@ public class SmithingMenuNew extends AbstractContainerMenu {
         this.access.execute((p_40263_, p_40264_) -> {
             p_40263_.levelEvent(1044, p_40264_, 0);
         });
-        if (wasTrim && p_150663_ instanceof ServerPlayer sPlayer) {
+        if (LargeItemLists.getTrimSmithingTemplates().contains(this.inputSlots.getItem(ADDITIONAL_SLOT).getItem()) && p_150663_ instanceof ServerPlayer sPlayer) {
             Advancement advancement = sPlayer.getLevel().getServer().getAdvancements().getAdvancement(new ResourceLocation("armor_trims:trim_with_any_armor_pattern"));
             Advancement advancementChallenge = sPlayer.getLevel().getServer().getAdvancements().getAdvancement(new ResourceLocation("armor_trims:trim_with_all_armor_patterns"));
             if (advancement != null && !sPlayer.getAdvancements().getOrStartProgress(advancement).isDone()) {
                 sPlayer.getAdvancements().award(advancement, "code_triggered");
             }
             try {
-                if (advancementChallenge != null && !Objects.requireNonNull(sPlayer.getAdvancements().getOrStartProgress(advancementChallenge).getCriterion("code_triggered_" + TrimmableItem.getTrim(p_150664_))).isDone()) {
-                    sPlayer.getAdvancements().award(advancementChallenge, "code_triggered_" + TrimmableItem.getTrim(p_150664_));
+                if (advancementChallenge != null && !Objects.requireNonNull(sPlayer.getAdvancements().getOrStartProgress(advancementChallenge).getCriterion("code_triggered_" + TrimmableItem.getTrim(p_150664_).getPath())).isDone()) {
+                    sPlayer.getAdvancements().award(advancementChallenge, "code_triggered_" + TrimmableItem.getTrim(p_150664_).getPath());
                 }
             } catch (NullPointerException ignored) {}
         }
@@ -141,7 +142,7 @@ public class SmithingMenuNew extends AbstractContainerMenu {
         ItemStack upgradeItem = this.inputSlots.getItem(ADDITIONAL_SLOT);
         ItemStack materialItem = this.inputSlots.getItem(MATERIAL_SLOT);
         if (upgradeItem.getItem() instanceof SmithingTemplate templateItem) {
-            if (templateItem.getTrim() == Trims.NETHERITE_UPGRADE && materialItem.is(ItemTags.create(new ResourceLocation("forge:ingots/netherite"))) && !Config.disableNetheriteUpgrade()) {
+            if (templateItem instanceof SmithingTemplate$Upgrade upgradeTemplate && materialItem.is(upgradeTemplate.getTag()) && !(materialItem.is(Tags.Items.INGOTS_NETHERITE) && Config.disableNetheriteUpgrade())) {
                 Container vanillaRecipeContainer = new SimpleContainer(2);
                 vanillaRecipeContainer.setItem(0, baseItem);
                 vanillaRecipeContainer.setItem(1, materialItem);

@@ -4,6 +4,7 @@ import gg.hipposgrumm.armor_trims.Armortrims;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate;
 import gg.hipposgrumm.armor_trims.trimming.Trims;
 import gg.hipposgrumm.armor_trims.util.AssociateTagsWithItems;
+import gg.hipposgrumm.armor_trims.util.LargeItemLists;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.client.Minecraft;
@@ -44,10 +45,13 @@ public final class ItemUpgradeRecipeMaker {
 
     private static Stream<IArmortrimsRecipe> getArmortrimRecipes(IItemUpgradeRecipeFactory recipeFactory, ItemStack upgradableItem) {
         List<IArmortrimsRecipe> recipes = new ArrayList<>();
-        for (Item materialItem:new AssociateTagsWithItems(Tags.Items.INGOTS_NETHERITE.location().toString()).getItems()) {
-            if ((upgradableItem.getItem() instanceof TieredItem || upgradableItem.getItem() instanceof ArmorItem)) {
-                ItemStack item = getUpgradedItem(upgradableItem.copy(), new ItemStack(Armortrims.NETHERITE_UPGRADE.get()), materialItem.getDefaultInstance());
-                if (!item.getItem().equals(upgradableItem.getItem())) recipes.add(recipeFactory.createUpgradingRecipe(upgradableItem, new ItemStack(Armortrims.NETHERITE_UPGRADE.get()), materialItem.getDefaultInstance()));
+        for (Item templateItem: LargeItemLists.getUpgradeSmithingTemplates()) {
+            for (Item materialItem : new AssociateTagsWithItems(Tags.Items.INGOTS_NETHERITE.location().toString()).getItems()) {
+                if ((upgradableItem.getItem() instanceof TieredItem || upgradableItem.getItem() instanceof ArmorItem)) {
+                    ItemStack item = getUpgradedItem(upgradableItem.copy(), templateItem.getDefaultInstance(), materialItem.getDefaultInstance());
+                    if (!item.getItem().equals(upgradableItem.getItem()))
+                        recipes.add(recipeFactory.createUpgradingRecipe(upgradableItem, templateItem.getDefaultInstance(), materialItem.getDefaultInstance()));
+                }
             }
         }
         return recipes.stream();

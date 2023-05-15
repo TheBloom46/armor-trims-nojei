@@ -38,7 +38,7 @@ public class ItemUpgradeRecipeCategory implements IRecipeCategory<ArmortrimsReci
 
     public ItemUpgradeRecipeCategory(IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, 168, 85);
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.NETHERITE_CHESTPLATE));
+        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, Items.NETHERITE_CHESTPLATE.getDefaultInstance());
     }
 
     @Override

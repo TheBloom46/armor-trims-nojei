@@ -25,7 +25,7 @@ public class TrimmedItemDescription {
         if (TrimmableItem.isTrimmed(itemstack)) {
             list.add(index, new TranslatableComponent("tooltip.armor_trims.trim").withStyle(ChatFormatting.GRAY));
             TextColor color = TextColor.fromRgb(TrimmableItem.getMaterialColor(itemstack));
-            TranslatableComponent trimName = new TranslatableComponent("trims.armor_trims." + TrimmableItem.getTrim(itemstack));
+            TranslatableComponent trimName = new TranslatableComponent("trims."+TrimmableItem.getTrim(itemstack).getNamespace()+"." + TrimmableItem.getTrim(itemstack).getPath());
             trimName.withStyle(trimName.getStyle().withColor(color));
             list.add(index+1, new TextComponent(" ").append(trimName));
             TranslatableComponent materialName = new TranslatableComponent(ForgeRegistries.ITEMS.getValue(TrimmableItem.getMaterial(itemstack)).getDescriptionId());

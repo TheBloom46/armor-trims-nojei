@@ -28,9 +28,9 @@ public interface TrimmableItem {
         return compoundtag != null && compoundtag.contains(TAG_TRIM_MATERIAL) ? new ResourceLocation(compoundtag.getString(TAG_TRIM_MATERIAL)) : null;
     }
 
-    static String getTrim(ItemStack targetItem) {
+    static ResourceLocation getTrim(ItemStack targetItem) {
         CompoundTag compoundtag = targetItem.getTagElement(TAG_TRIM);
-        return compoundtag != null && compoundtag.contains(TAG_TRIM_PATTERN) ? compoundtag.getString(TAG_TRIM_PATTERN) : "empty";
+        return compoundtag != null && compoundtag.contains(TAG_TRIM_PATTERN) ?  compoundtag.getString(TAG_TRIM_PATTERN).split(":").length>1?new ResourceLocation(compoundtag.getString(TAG_TRIM_PATTERN)):new ResourceLocation("armor_trims", compoundtag.getString(TAG_TRIM_PATTERN)) : new ResourceLocation("armor_trim:empty");
     }
 
     static void clearTrim(ItemStack targetItem) {
@@ -44,7 +44,7 @@ public interface TrimmableItem {
         targetItem.getOrCreateTagElement(TAG_TRIM).putString(TAG_TRIM_MATERIAL, material.getItem().getRegistryName().toString());
     }
     static void setTrim(ItemStack targetItem, Trims trim) {
-        targetItem.getOrCreateTagElement(TAG_TRIM).putString(TAG_TRIM_PATTERN, trim.getId());
+        targetItem.getOrCreateTagElement(TAG_TRIM).putString(TAG_TRIM_PATTERN, trim.name.toString());
     }
 
     static ItemStack applyTrim(ItemStack targetItem, Trims trim, ItemStack material) {
@@ -54,7 +54,7 @@ public interface TrimmableItem {
     static ItemStack applyTrim(ItemStack targetItem, Trims trim, ItemStack material, boolean internal) {
         ItemStack armorItem;
         Item item = targetItem.getItem();
-        if (internal || item instanceof ArmorItem) {
+        if ((internal || item instanceof ArmorItem) && trim != null) {
             armorItem = targetItem.copy();
             armorItem.setCount(1);
 

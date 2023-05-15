@@ -33,7 +33,7 @@ public class ArmortrimsRecipeCategory implements IRecipeCategory<ArmortrimsRecip
 
     public ArmortrimsRecipeCategory(IGuiHelper helper) {
         this.background = helper.createDrawable(TEXTURE, 0, 0, 168, 85);
-        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, TrimmableItem.applyTrim(new ItemStack(Items.IRON_CHESTPLATE), Trims.COAST, new ItemStack(Items.EMERALD)));
+        this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, TrimmableItem.applyTrim(new ItemStack(Items.IRON_CHESTPLATE), new Trims(new ResourceLocation(Armortrims.MODID, "coast")), new ItemStack(Items.EMERALD)));
     }
 
     @Override
