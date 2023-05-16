@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import com.mojang.logging.LogUtils;
 import gg.hipposgrumm.armor_trims.Armortrims;
+import gg.hipposgrumm.armor_trims.api.ArmortrimsApi;
 import gg.hipposgrumm.armor_trims.config.Config;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate$Upgrade;
@@ -144,7 +145,7 @@ public class SmithingMenuNew extends AbstractContainerMenu {
         ItemStack upgradeItem = this.inputSlots.getItem(ADDITIONAL_SLOT);
         ItemStack materialItem = this.inputSlots.getItem(MATERIAL_SLOT);
         if (upgradeItem.getItem() instanceof SmithingTemplate templateItem) {
-            if (templateItem instanceof SmithingTemplate$Upgrade upgradeTemplate && materialItem.is(upgradeTemplate.getTag()) && !(materialItem.is(Tags.Items.INGOTS_NETHERITE) && Config.disableNetheriteUpgrade())) {
+            if (templateItem instanceof SmithingTemplate$Upgrade && !ArmortrimsApi.upgradeBaseBlocked.stream().map(materialItem::is).toList().contains(true)) {
                 Container vanillaRecipeContainer = new SimpleContainer(2);
                 vanillaRecipeContainer.setItem(0, baseItem);
                 vanillaRecipeContainer.setItem(1, materialItem);

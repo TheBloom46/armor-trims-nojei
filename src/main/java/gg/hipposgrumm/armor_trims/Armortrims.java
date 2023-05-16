@@ -86,8 +86,14 @@ public class Armortrims {
 
     @SuppressWarnings("deprecation")
     public Armortrims() {
+        if (FMLEnvironment.dist.isDedicatedServer()) {
+            ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.COMMON_SERVER_SPEC, "armor_trims.toml");
+        } else {
+            ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC, "armor_trims.toml");
+        }
+
         new ArmortrimsApi(MODID)
-                .createUpgradeTemplate(Tags.Items.INGOTS_NETHERITE, false /* This is already hardcoded, so it means nothing when false. */, "trims.armor_trims.netherite_upgrade", "tooltip.armor_trims.applyTo.diamond_equipment", "netherite_upgrade_smithing_template")
+                .createUpgradeTemplate(Tags.Items.INGOTS_NETHERITE, Config.disableVanillaNetheriteUpgrade(), "trims.armor_trims.netherite_upgrade", "tooltip.armor_trims.applyTo.diamond_equipment", "netherite_upgrade_smithing_template")
                 .createTrimTemplate(new ResourceLocation(MODID, "coast"), "trims.armor_trims.coast", "coast_armor_trim_smithing_template")
                 .createTrimTemplate(new ResourceLocation(MODID, "dune"), "trims.armor_trims.dune", "dune_armor_trim_smithing_template")
                 .createTrimTemplate(new ResourceLocation(MODID, "eye"), "trims.armor_trims.eye", "eye_armor_trim_smithing_template")
@@ -141,12 +147,6 @@ public class Armortrims {
                 .addConfigDefault("create:polished_rose_quartz");
 
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        if (FMLEnvironment.dist.isDedicatedServer()) {
-            ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.COMMON_SERVER_SPEC, "armor_trims.toml");
-        } else {
-            ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC, "armor_trims.toml");
-        }
 
         ArmortrimsApi.loadAll(modEventBus);
         NEW_SMITHING_MENUS.register(modEventBus);
