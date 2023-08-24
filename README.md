@@ -1,6 +1,6 @@
 <div align="center"><img src="https://raw.githubusercontent.com/Hipposgrumm/armor-trims/master/images/banner.png" alt="Armor Trims" title="Do you like my white and gold armor trim?"></div><br>
 Armor Trims allows you to decorate your armor with gems and ores (and dusts and crushed ores and whatever else you define in the config).<br>
-**The master branch is not active and only exists for images and documentation. There are appropriate branches for each Minecraft version the mod is on.**
+<strong>The master branch is not active and only exists for images and documentation. There are appropriate branches for each Minecraft version the mod is on.</strong>
 
 # How to Add to Dev Environment
 
@@ -25,5 +25,5 @@ dependencies {
 ```
 If you don't want to use version `1.3.3`, you can always navigate to your desired version and replace the last few numbers in the dependency with the last few numbers of the file's url.
 <img src="https://raw.githubusercontent.com/Hipposgrumm/armor-trims/master/images/import_tutorial_custom_install.jpg" alt="In case you can't see it, it's the numbers at the end of the url when viewing a file.">
-Once you've done that, you should be able to reload your gradle project and have Armor Trims Backport readily available.
-*Note: You will probably want to make sure that the mod is present before calling any of its methods , unless this mod is a required dependency.*
+Once you've done that, you should be able to reload your gradle project and have Armor Trims Backport readily available.<br>
+<i>Note: You will probably want to make sure that the mod is present before calling any of its methods , unless this mod is a required dependency.</i>
