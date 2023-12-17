@@ -3,42 +3,57 @@ package gg.hipposgrumm.armor_trims.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import gg.hipposgrumm.armor_trims.model.TrimDecorationBaker;
-import gg.hipposgrumm.armor_trims.model.TrimRenderLayer;
 import gg.hipposgrumm.armor_trims.trimming.TrimmableItem;
 import gg.hipposgrumm.armor_trims.trimming.Trims;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.StainedGlassPaneBlock;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ItemRenderer.class)
+@Mixin(
+    value = {ItemRenderer.class},
+    priority = 1500
+)
+
 public abstract class TrimmedItemDecorator {
     @Shadow public abstract void renderModelLists(BakedModel p_115190_, ItemStack p_115191_, int p_115192_, int p_115193_, PoseStack p_115194_, VertexConsumer p_115195_);
 
     @Shadow @Final private ItemColors itemColors;
 
-    @Inject(method = "render(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IILnet/minecraft/client/resources/model/BakedModel;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderModelLists(Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/item/ItemStack;IILcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;)V", shift = At.Shift.AFTER))
+    @Inject(
+        method = {"Lnet/minecraft/client/renderer/entity/ItemRenderer;render(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IILnet/minecraft/client/resources/model/BakedModel;)V"},
+        at = {@At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderModelLists(Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/item/ItemStack;IILcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;)V",
+            shift = Shift.AFTER
+        )}
+    )
     private void armortrims_armorDecoration(ItemStack p_115144_, ItemTransforms.TransformType p_115145_, boolean p_115146_, PoseStack p_115147_, MultiBufferSource p_115148_, int p_115149_, int p_115150_, BakedModel p_115151_, CallbackInfo ci) {
         if (!p_115151_.isCustomRenderer() && (!p_115144_.is(Items.TRIDENT) || (p_115145_ == ItemTransforms.TransformType.GUI || p_115145_ == ItemTransforms.TransformType.GROUND || p_115145_ == ItemTransforms.TransformType.FIXED)) && TrimmableItem.isTrimmed(p_115144_)) {
             boolean fabulousFlag_armortrimsMixin;
@@ -48,7 +63,8 @@ public abstract class TrimmedItemDecorator {
             } else {
                 fabulousFlag_armortrimsMixin = true;
             }
-            net.minecraftforge.client.ForgeHooksClient.drawItemLayered((ItemRenderer) (Object) this, p_115151_, p_115144_, p_115147_, p_115148_, p_115149_, p_115150_, p_115146_);
+
+            ForgeHooksClient.drawItemLayered((ItemRenderer) (Object) this, p_115151_, p_115144_, p_115147_, p_115148_, p_115149_, p_115150_, p_115146_);
 
             /** *Casually steals forge code...* */
             BakedModel layer = getModelForSlot(p_115144_);
@@ -67,13 +83,35 @@ public abstract class TrimmedItemDecorator {
             this.renderModelLists(layer, overlayStack, p_115149_, p_115150_, p_115147_, ivertexbuilder);
         }
     }
-
-    @Redirect(method = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderQuadList(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Ljava/util/List;Lnet/minecraft/world/item/ItemStack;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/color/item/ItemColors;getColor(Lnet/minecraft/world/item/ItemStack;I)I"))
+    @Redirect(
+        method = {"Lnet/minecraft/client/renderer/entity/ItemRenderer;renderQuadList(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Ljava/util/List;Lnet/minecraft/world/item/ItemStack;II)V"},
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/color/item/ItemColors;getColor(Lnet/minecraft/world/item/ItemStack;I)I"
+        )
+    )
     private int armortrims_armorDecorationTint(ItemColors instance, ItemStack p_92677_, int p_92678_) {
         if (TrimmableItem.isTrimmed(p_92677_) && p_92677_.is(Items.AIR)) {
             return TrimmableItem.getMaterialColor(p_92677_);
+        } else {
+            return p_92678_!=-1?this.itemColors.getColor(p_92677_,p_92678_):p_92678_;
         }
-        return p_92678_!=-1?this.itemColors.getColor(p_92677_,p_92678_):p_92678_;
+    }
+
+    @Redirect(
+        method = {"Lnet/minecraft/client/renderer/entity/ItemRenderer;renderQuadList(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Ljava/util/List;Lnet/minecraft/world/item/ItemStack;II)V"},
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/color/item/ItemColor;getColor(Lnet/minecraft/world/item/ItemStack;I)I"
+        )
+    )
+    @Dynamic("No need to apply Rubidium fix because Rubidium is not present.")
+    private int armortrims_armorDecorationTint_rubidiumFix(ItemColor instance, ItemStack p_92677_, int p_92678_) {
+        if (TrimmableItem.isTrimmed(p_92677_) && p_92677_.is(Items.AIR)) {
+            return TrimmableItem.getMaterialColor(p_92677_);
+        } else {
+            return p_92678_ != -1 ? this.itemColors.getColor(p_92677_,p_92678_):p_92678_;
+        }
     }
 
     @Redirect(method = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderQuadList(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Ljava/util/List;Lnet/minecraft/world/item/ItemStack;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"))
@@ -84,7 +122,13 @@ public abstract class TrimmedItemDecorator {
         return instance.isEmpty();
     }
 
-    @Redirect(method = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderQuadList(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Ljava/util/List;Lnet/minecraft/world/item/ItemStack;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/block/model/BakedQuad;isTinted()Z"))
+    @Redirect(
+        method = {"Lnet/minecraft/client/renderer/entity/ItemRenderer;renderQuadList(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Ljava/util/List;Lnet/minecraft/world/item/ItemStack;II)V"},
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/block/model/BakedQuad;isTinted()Z"
+        )
+    )
     private boolean armortrims_armorDecorationTintCheckOverride(BakedQuad instance) {
         return true;
     }

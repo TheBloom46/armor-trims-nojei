@@ -1,8 +1,6 @@
 package gg.hipposgrumm.armor_trims.api;
 
-import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.logging.LogUtils;
 import gg.hipposgrumm.armor_trims.config.Config;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate$Upgrade;
@@ -12,21 +10,18 @@ import gg.hipposgrumm.armor_trims.trimming.Trims;
 import gg.hipposgrumm.armor_trims.util.AssociateTagsWithItems;
 import gg.hipposgrumm.armor_trims.util.GetAvgColor;
 import gg.hipposgrumm.armor_trims.util.LargeItemLists;
-import mezz.jei.api.runtime.IBookmarkOverlay;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
-import org.lwjgl.system.CallbackI;
 
-import java.util.*;
-import java.util.function.Supplier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This serves as an API class for integration. You can call this class's various methods to create trims, templates, and armor model overrides.

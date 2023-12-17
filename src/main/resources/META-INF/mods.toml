@@ -29,10 +29,3 @@ Is this mod a little too configurable? I feel like it's a little too configurabl
     versionRange="[1.18.2,1.19)"
     ordering="NONE"
     side="BOTH"
-
-[[dependencies.armor_trims]]
-    modId="jei"
-    mandatory=false
-    versionRange="[9.6.0,)"
-    ordering="AFTER"
-    side="CLIENT"

@@ -1,9 +1,6 @@
 package gg.hipposgrumm.armor_trims.util;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.logging.LogUtils;
-import gg.hipposgrumm.armor_trims.Armortrims;
-import gg.hipposgrumm.armor_trims.compat.jei.ArmortrimsRecipe;
 import gg.hipposgrumm.armor_trims.config.Config;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate;
 import gg.hipposgrumm.armor_trims.item.SmithingTemplate$Upgrade;
